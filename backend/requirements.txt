@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+motor
+python-multipart
+spacy
+pygithub
+pytesseract
+pdfplumber
+pydantic
+pydantic-settings
+python-dotenv
