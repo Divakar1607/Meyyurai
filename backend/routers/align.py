@@ -47,3 +47,5 @@ async def align_job(request: AlignmentRequest):
         "matched_skills": matched_skills,
         "skill_gaps": skill_gaps
     }
+
+# Alignment scoring optimized
