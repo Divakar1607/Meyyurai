@@ -1,0 +1,131 @@
+.intro-container {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0B2E33; /* Dark Navy */
+  overflow: hidden;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.intro-container.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Background Gradient Shifting */
+.bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, #028090 0%, #0B2E33 100%);
+  opacity: 0.3;
+  animation: shiftGradient 4s ease-in-out infinite alternate;
+}
+
+@keyframes shiftGradient {
+  0% { transform: scale(1); opacity: 0.2; }
+  100% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* Floating Dots */
+.dot {
+  position: absolute;
+  border-radius: 50%;
+  background: #028090; /* Deep Teal */
+  filter: blur(30px);
+  opacity: 0.4;
+  animation: floatDot 6s ease-in-out infinite alternate;
+}
+.dot-1 { width: 150px; height: 150px; top: 15%; left: 25%; animation-delay: 0s; }
+.dot-2 { width: 200px; height: 200px; bottom: 10%; right: 15%; animation-delay: -2s; }
+.dot-3 { width: 120px; height: 120px; top: 60%; left: 65%; animation-delay: -4s; }
+
+@keyframes floatDot {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(30px, -40px); }
+}
+
+/* Radial Spotlight Glow */
+.radial-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: rgba(2, 128, 144, 0.35);
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.8); opacity: 0.3; }
+  100% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/* Content Container */
+.content-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* English Text Animation */
+.english-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 0 20px rgba(2, 128, 144, 0.8);
+  letter-spacing: 0.05em;
+  display: flex;
+}
+
+.english-text span {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Tamil Text Animation */
+.tamil-text {
+  font-family: 'Noto Sans Tamil', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #028090;
+  text-shadow: 0 0 10px rgba(2, 128, 144, 0.4);
+  margin-top: 1rem;
+  opacity: 0;
+  transform: translateY(15px);
+  animation: fadeUpTamil 0.8s ease-out forwards;
+  animation-delay: 1.2s; /* Shows after English text */
+}
+
+@keyframes fadeUpTamil {
+  0% { opacity: 0; transform: translateY(15px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Animated Underline */
+.underline {
+  height: 4px;
+  background-color: #028090;
+  box-shadow: 0 0 12px #028090;
+  border-radius: 2px;
+  margin-top: 1.5rem;
+  width: 0;
+  animation: drawLine 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation-delay: 1.8s;
+}
+
+@keyframes drawLine {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
