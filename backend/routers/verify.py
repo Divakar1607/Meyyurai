@@ -60,3 +60,5 @@ async def verify_claims(request: VerificationRequest):
         "claims_verification": results,
         "skills_verification": verified_skills
     }
+
+# Verification logic finalized
