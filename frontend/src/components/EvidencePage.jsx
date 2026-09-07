@@ -1,10 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { GitBranch, Image as ImageIcon, CheckCircle, Search, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 export default function EvidencePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { result, jobDescriptions } = location.state || {};
+  
   const [githubUsername, setGithubUsername] = useState('');
   const [githubData, setGithubData] = useState(null);
   const [githubLoading, setGithubLoading] = useState(false);
@@ -173,7 +176,7 @@ export default function EvidencePage() {
 
         <div className="pt-8 border-t border-slate-200 flex justify-end">
           <button 
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/dashboard', { state: { result, jobDescriptions, githubData, certData } })}
             className="bg-rose-600 hover:bg-rose-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-rose-500/30 flex items-center gap-2 text-lg"
           >
             Generate Final Report <ArrowRight size={24} />

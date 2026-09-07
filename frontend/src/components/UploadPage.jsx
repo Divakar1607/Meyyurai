@@ -6,7 +6,7 @@ import axios from 'axios';
 export default function UploadPage() {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
-  const [jobDescription, setJobDescription] = useState('');
+  const [jobDescriptions, setJobDescriptions] = useState([{ title: 'Target Job 1', text: '' }]);
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -51,8 +51,9 @@ export default function UploadPage() {
 
     const formData = new FormData();
     formData.append('file', file);
-    if (jobDescription) {
-      formData.append('job_description', jobDescription);
+    // We don't need to send all JDs to upload endpoint, backend only uses it optionally
+    if (jobDescriptions[0].text) {
+      formData.append('job_description', jobDescriptions[0].text);
     }
 
     try {
@@ -117,18 +118,48 @@ export default function UploadPage() {
               </div>
             </div>
 
-            {/* Job Description Textarea */}
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold text-slate-700">
-                Target Job Description (Optional)
-              </label>
-              <textarea 
-                rows={4}
-                className="w-full rounded-2xl border-slate-200 shadow-sm focus:border-rose-500 focus:ring-rose-500 resize-none p-4 text-slate-700 bg-slate-50"
-                placeholder="Paste the job description here to enable alignment scoring..."
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-              />
+            {/* Job Descriptions List */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-semibold text-slate-700">
+                  Target Job Descriptions (Max 3)
+                </label>
+                {jobDescriptions.length < 3 && (
+                  <button 
+                    onClick={() => setJobDescriptions([...jobDescriptions, { title: `Target Job ${jobDescriptions.length + 1}`, text: '' }])}
+                    className="text-sm font-bold text-rose-600 hover:text-rose-700 bg-rose-50 px-3 py-1 rounded-full transition-colors"
+                  >
+                    + Add Another Job
+                  </button>
+                )}
+              </div>
+              
+              {jobDescriptions.map((jd, idx) => (
+                <div key={idx} className="space-y-2 relative">
+                  {jobDescriptions.length > 1 && (
+                    <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase">
+                      <span>{jd.title}</span>
+                      <button 
+                        onClick={() => setJobDescriptions(jobDescriptions.filter((_, i) => i !== idx))}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  <textarea 
+                    rows={3}
+                    className="w-full rounded-2xl border-slate-200 shadow-sm focus:border-rose-500 focus:ring-rose-500 resize-none p-4 text-slate-700 bg-slate-50"
+                    placeholder={`Paste the job description for ${jd.title} here...`}
+                    value={jd.text}
+                    onChange={(e) => {
+                      const newJds = [...jobDescriptions];
+                      newJds[idx].text = e.target.value;
+                      setJobDescriptions(newJds);
+                    }}
+                  />
+                </div>
+              ))}
             </div>
 
             {error && (
@@ -189,7 +220,7 @@ export default function UploadPage() {
             
             <div className="pt-6 border-t border-slate-100 flex justify-end">
               <button 
-                onClick={() => navigate('/evidence')}
+                onClick={() => navigate('/evidence', { state: { result, jobDescriptions } })}
                 className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-slate-900/20 flex items-center gap-2"
               >
                 Proceed to Evidence Collection <ArrowRight size={20} />
