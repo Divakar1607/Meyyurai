@@ -94,7 +94,7 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.02, boxShadow: "0px 15px 30px -5px rgba(2, 195, 154, 0.4)" }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => navigate('/upload')}
-                  className="px-8 py-4 bg-brand-rose text-white font-bold rounded-2xl shadow-xl shadow-brand-rose/30 flex items-center justify-center gap-3 text-lg transition-all"
+                  className="px-8 py-4 bg-rose-600 text-white font-bold rounded-2xl shadow-xl shadow-rose-600/30 flex items-center justify-center gap-3 text-lg transition-all"
                 >
                   Verify a Resume <UploadCloud size={22} />
                 </motion.button>
