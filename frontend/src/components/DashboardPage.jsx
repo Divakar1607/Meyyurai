@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Target, CheckCircle, AlertTriangle, Download, Award, ShieldCheck, XCircle, TrendingUp } from 'lucide-react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
+import EvidenceConfidenceCard from './EvidenceConfidenceCard';
+import ResumeScoreCard from './ResumeScoreCard';
+import SkillGapRoadmap from './SkillGapRoadmap';
+import AtsCheckCard from './AtsCheckCard';
+import MockInterviewQuestions from './MockInterviewQuestions';
+import JobComparisonView from './JobComparisonView';
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [verifyData, setVerifyData] = useState(null);
   const [alignData, setAlignData] = useState(null);
+  const [alignDataArray, setAlignDataArray] = useState([]);
+  const [claimFilter, setClaimFilter] = useState('all');
+
+  const location = useLocation();
+  const { result, jobDescription, jobDescriptions, githubData, certData } = location.state || {};
 
   useEffect(() => {
     // In a real app, this data would come from global state (Redux/Context) or be passed via location state
@@ -14,33 +26,51 @@ export default function DashboardPage() {
     const runPipeline = async () => {
       try {
         // 1. Verify
+        const claims = result?.claims || [
+          "Developed a full-stack React application with FastAPI backend",
+          "Certified in AWS Cloud Practitioner",
+          "Built a machine learning model for sentiment analysis"
+        ];
+        const skills = result?.skills || ["React", "FastAPI", "Python", "AWS", "SQL"];
+        
+        const github_repos = githubData?.recent_repositories ? githubData.recent_repositories.map(repo => ({
+          name: repo.name,
+          description: repo.description || "",
+          language: repo.language || ""
+        })) : [
+          { name: "react-fastapi-demo", description: "A full-stack React application with FastAPI backend", language: "JavaScript" },
+          { name: "ml-sentiment", description: "Sentiment analysis using python", language: "Python" }
+        ];
+        
+        const certificate_text = certData?.extracted_text || "AWS Certified Cloud Practitioner";
+
         const vRes = await axios.post('http://localhost:8000/api/verify', {
-          claims: [
-            "Developed a full-stack React application with FastAPI backend",
-            "Certified in AWS Cloud Practitioner",
-            "Built a machine learning model for sentiment analysis"
-          ],
-          skills: ["React", "FastAPI", "Python", "AWS", "SQL"],
-          github_repos: [
-            { name: "react-fastapi-demo", description: "A full-stack React application with FastAPI backend", language: "JavaScript" },
-            { name: "ml-sentiment", description: "Sentiment analysis using python", language: "Python" }
-          ],
-          certificate_text: "AWS Certified Cloud Practitioner"
+          claims,
+          skills,
+          github_repos,
+          certificate_text
         });
         
         setVerifyData(vRes.data);
 
-        // 2. Align
+        // 2. Align (Multiple Support)
         const verifiedSkills = vRes.data.skills_verification
                                 .filter(s => s.status === 'Verified')
                                 .map(s => s.skill);
+                                
+        const jds = (jobDescriptions && jobDescriptions.length > 0) ? jobDescriptions : [{ title: 'Target Job 1', text: jobDescription || "We are looking for a software engineer experienced in React, FastAPI, Python, Docker, and AWS." }];
+        
+        const alignments = [];
+        for (const jd of jds) {
+          const aRes = await axios.post('http://localhost:8000/api/align', {
+            verified_skills: verifiedSkills.length > 0 ? verifiedSkills : ["React", "FastAPI"],
+            job_description: jd.text || "We are looking for a software engineer experienced in React, FastAPI, Python, Docker, and AWS."
+          });
+          alignments.push({ title: jd.title, data: aRes.data });
+        }
 
-        const aRes = await axios.post('http://localhost:8000/api/align', {
-          verified_skills: verifiedSkills.length > 0 ? verifiedSkills : ["React", "FastAPI"],
-          job_description: "We are looking for a software engineer experienced in React, FastAPI, Python, Docker, and AWS."
-        });
-
-        setAlignData(aRes.data);
+        setAlignDataArray(alignments);
+        setAlignData(alignments[0].data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -72,10 +102,17 @@ export default function DashboardPage() {
             </h1>
             <p className="text-slate-500 mt-1">Verification and Job Alignment Summary</p>
           </div>
-          <button className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-semibold transition-colors">
+          <button onClick={() => window.print()} className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-semibold transition-colors">
             <Download size={18} /> Export PDF
           </button>
         </div>
+
+        {/* Feature 1: Resume Score & Tips */}
+        <ResumeScoreCard 
+          claims={verifyData?.claims_verification} 
+          githubData={githubData} 
+          certData={certData} 
+        />
 
         <div className="grid md:grid-cols-3 gap-8">
           
@@ -98,29 +135,16 @@ export default function DashboardPage() {
             </div>
 
             {/* Verification Stats */}
-            <div className="bg-slate-900 text-white p-8 rounded-3xl shadow-xl border border-slate-800">
-              <h2 className="text-lg font-bold text-slate-300 uppercase tracking-wider mb-6">Evidence Confidence</h2>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center pb-4 border-b border-slate-700/50">
-                  <span className="flex items-center gap-2"><CheckCircle className="text-amber-400" size={18} /> Verified</span>
-                  <span className="font-bold text-lg">
-                    {verifyData?.claims_verification?.filter(c => c.status === 'Verified').length || 0}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center pb-4 border-b border-slate-700/50">
-                  <span className="flex items-center gap-2"><AlertTriangle className="text-amber-400" size={18} /> Partial</span>
-                  <span className="font-bold text-lg">
-                    {verifyData?.claims_verification?.filter(c => c.status === 'Partially Verified').length || 0}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center gap-2"><XCircle className="text-red-400" size={18} /> Unverified</span>
-                  <span className="font-bold text-lg">
-                    {verifyData?.claims_verification?.filter(c => c.status === 'Unverified').length || 0}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <EvidenceConfidenceCard 
+              claims={verifyData?.claims_verification || []} 
+              onFilterChange={setClaimFilter} 
+            />
+
+            {/* Feature 3: ATS Compatibility Check */}
+            <AtsCheckCard 
+              claims={verifyData?.claims_verification || []} 
+              skills={alignData?.matched_skills || []} 
+            />
           </div>
 
           {/* Details Section */}
@@ -132,25 +156,42 @@ export default function DashboardPage() {
                 <Award className="text-rose-500" /> Claims Breakdown
               </h2>
               <div className="space-y-4">
-                {verifyData?.claims_verification?.map((claim, idx) => (
+                {verifyData?.claims_verification?.filter(claim => {
+                  if (!claimFilter) return true;
+                  const score = claim.confidence_score || 0;
+                  if (claimFilter === 'verified') return score >= 80;
+                  if (claimFilter === 'partial') return score >= 40 && score < 80;
+                  if (claimFilter === 'unverified') return score < 40;
+                  return true;
+                }).map((claim, idx) => (
                   <div key={idx} className="p-4 rounded-2xl border border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <p className="text-sm text-slate-700 font-medium">{claim.claim}</p>
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="w-24 bg-slate-200 rounded-full h-2">
                         <div 
-                          className={`h-2 rounded-full ${claim.confidence_score > 70 ? 'bg-amber-500' : claim.confidence_score > 30 ? 'bg-amber-400' : 'bg-red-400'}`}
+                          className={`h-2 rounded-full ${claim.confidence_score >= 80 ? 'bg-emerald-500' : claim.confidence_score >= 40 ? 'bg-amber-400' : 'bg-rose-400'}`}
                           style={{ width: `${claim.confidence_score}%` }}
                         ></div>
                       </div>
                       <span className={`text-xs font-bold px-2.5 py-1 rounded-full 
-                        ${claim.status === 'Verified' ? 'bg-amber-100 text-amber-700' : 
-                          claim.status === 'Partially Verified' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}
+                        ${claim.confidence_score >= 80 ? 'bg-emerald-100 text-emerald-700' : 
+                          claim.confidence_score >= 40 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}
                       >
-                        {claim.status}
+                        {claim.confidence_score >= 80 ? 'Verified' : claim.confidence_score >= 40 ? 'Partial' : 'Unverified'}
                       </span>
                     </div>
                   </div>
                 ))}
+                {verifyData?.claims_verification?.length > 0 && verifyData.claims_verification.filter(claim => {
+                  if (!claimFilter) return true;
+                  const score = claim.confidence_score || 0;
+                  if (claimFilter === 'verified') return score >= 80;
+                  if (claimFilter === 'partial') return score >= 40 && score < 80;
+                  if (claimFilter === 'unverified') return score < 40;
+                  return true;
+                }).length === 0 && (
+                  <p className="text-slate-500 text-sm py-4 text-center">No claims found for this filter category.</p>
+                )}
               </div>
             </div>
 
@@ -188,6 +229,20 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* Feature 2: Skill Gap & Roadmap */}
+            <SkillGapRoadmap skillGaps={alignData?.skill_gaps} />
+
+            {/* Feature 4: Mock Interview Questions */}
+            <MockInterviewQuestions 
+              claims={verifyData?.claims_verification || []} 
+              skills={alignData?.matched_skills || []} 
+            />
+
+            {/* Feature 5: Multiple Job Comparison */}
+            {alignDataArray.length > 1 && (
+              <JobComparisonView alignments={alignDataArray} />
+            )}
 
           </div>
         </div>
