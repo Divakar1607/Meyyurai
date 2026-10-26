@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, CheckCircle, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle, AlertCircle, Loader2, ArrowRight, GitCompare, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -78,6 +78,31 @@ export default function UploadPage() {
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans text-slate-900">
       <div className="max-w-4xl mx-auto space-y-8">
         
+        {/* Navigation Bar */}
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+          <div 
+            onClick={() => navigate('/')} 
+            className="flex items-center gap-2 cursor-pointer text-brand-dark font-extrabold text-xl"
+          >
+            <ShieldCheck size={26} className="text-rose-600" />
+            <span>Meyyurai</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('/solution-comparison')}
+              className="px-4 py-2 text-xs sm:text-sm font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-full transition-colors flex items-center gap-1.5"
+            >
+              <GitCompare size={16} /> Solution Comparison
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors flex items-center gap-1"
+            >
+              <ArrowLeft size={16} /> Home
+            </button>
+          </div>
+        </div>
+
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-extrabold tracking-tight">Upload & Parse</h1>
           <p className="text-slate-500 text-lg">Upload a candidate's resume and target job description to begin verification.</p>
