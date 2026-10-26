@@ -9,3 +9,4 @@ pdfplumber
 pydantic
 pydantic-settings
 python-dotenv
+python-docx
