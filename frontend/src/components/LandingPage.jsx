@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { UploadCloud, CheckCircle, Search, Target, FileText, GitBranch, Database, Code, ShieldCheck, ChevronRight } from 'lucide-react';
+import { UploadCloud, CheckCircle, Search, Target, FileText, GitBranch, Database, Code, ShieldCheck, ChevronRight, GitCompare } from 'lucide-react';
 import HeroAnimation from './HeroAnimation';
 
 // Reusable scroll animation wrapper
@@ -30,18 +30,32 @@ export default function LandingPage() {
         className="border-b border-slate-200/50 bg-white/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-brand-dark font-black text-2xl tracking-tight cursor-pointer">
+          <div 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-brand-dark font-black text-2xl tracking-tight cursor-pointer"
+          >
             <ShieldCheck size={32} className="text-brand-rose" />
             <span>Meyyurai</span>
           </div>
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/upload')}
-            className="px-6 py-2.5 bg-brand-dark hover:bg-slate-800 text-white font-semibold rounded-full transition-colors shadow-lg shadow-brand-dark/20 flex items-center gap-2 text-sm"
-          >
-            Get Started <ChevronRight size={16} />
-          </motion.button>
+
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button
+              onClick={() => navigate('/solution-comparison')}
+              className="px-4 py-2 text-slate-700 hover:text-rose-600 font-semibold text-sm rounded-full hover:bg-slate-100 transition-colors flex items-center gap-1.5"
+            >
+              <GitCompare size={16} className="text-rose-600" />
+              <span>Solution Comparison</span>
+            </button>
+
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/upload')}
+              className="px-6 py-2.5 bg-brand-dark hover:bg-slate-800 text-white font-semibold rounded-full transition-colors shadow-lg shadow-brand-dark/20 flex items-center gap-2 text-sm"
+            >
+              Get Started <ChevronRight size={16} />
+            </motion.button>
+          </div>
         </div>
       </motion.nav>
 
@@ -88,7 +102,7 @@ export default function LandingPage() {
               
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-col sm:flex-row gap-5"
+                className="flex flex-col sm:flex-row gap-4"
               >
                 <motion.button 
                   whileHover={{ scale: 1.02, boxShadow: "0px 15px 30px -5px rgba(2, 195, 154, 0.4)" }}
@@ -97,6 +111,14 @@ export default function LandingPage() {
                   className="px-8 py-4 bg-rose-600 text-white font-bold rounded-2xl shadow-xl shadow-rose-600/30 flex items-center justify-center gap-3 text-lg transition-all"
                 >
                   Verify a Resume <UploadCloud size={22} />
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate('/solution-comparison')}
+                  className="px-6 py-4 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-2xl border border-slate-200 shadow-sm flex items-center justify-center gap-2 text-base transition-all"
+                >
+                  <GitCompare size={20} className="text-rose-600" /> Solution Comparison
                 </motion.button>
               </motion.div>
             </div>
@@ -129,6 +151,17 @@ export default function LandingPage() {
             Recruiters spend countless hours manually cross-referencing skills, projects, and certificates. 
             <strong className="text-white font-semibold"> Our platform automates this tedious process, providing an objective confidence score for every claim.</strong>
           </p>
+
+          <div className="pt-2">
+            <button
+              onClick={() => navigate('/solution-comparison')}
+              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 backdrop-blur-sm transition-all"
+            >
+              <GitCompare size={18} className="text-rose-400" />
+              <span>Explore Traditional vs MEYYURAI Comparison</span>
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </ScrollFadeIn>
       </section>
 
