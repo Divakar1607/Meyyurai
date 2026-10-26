@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Target, CheckCircle, AlertTriangle, Download, Award, ShieldCheck, XCircle, TrendingUp } from 'lucide-react';
+import { Target, CheckCircle, AlertTriangle, Download, Award, ShieldCheck, XCircle, TrendingUp, GitCompare, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import EvidenceConfidenceCard from './EvidenceConfidenceCard';
 import ResumeScoreCard from './ResumeScoreCard';
 import SkillGapRoadmap from './SkillGapRoadmap';
@@ -10,6 +10,7 @@ import MockInterviewQuestions from './MockInterviewQuestions';
 import JobComparisonView from './JobComparisonView';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [verifyData, setVerifyData] = useState(null);
   const [alignData, setAlignData] = useState(null);
@@ -102,9 +103,17 @@ export default function DashboardPage() {
             </h1>
             <p className="text-slate-500 mt-1">Verification and Job Alignment Summary</p>
           </div>
-          <button onClick={() => window.print()} className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-semibold transition-colors">
-            <Download size={18} /> Export PDF
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button 
+              onClick={() => navigate('/solution-comparison')} 
+              className="flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-5 py-2.5 rounded-full font-semibold transition-colors text-sm"
+            >
+              <GitCompare size={18} /> Solution Comparison
+            </button>
+            <button onClick={() => window.print()} className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-semibold transition-colors text-sm">
+              <Download size={18} /> Export PDF
+            </button>
+          </div>
         </div>
 
         {/* Feature 1: Resume Score & Tips */}
@@ -145,6 +154,29 @@ export default function DashboardPage() {
               claims={verifyData?.claims_verification || []} 
               skills={alignData?.matched_skills || []} 
             />
+
+            {/* Solution Comparison Dashboard Card */}
+            <div className="bg-gradient-to-br from-slate-900 to-brand-dark text-white p-6 rounded-3xl shadow-xl border border-slate-800 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-600/20 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
+                  <GitCompare size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-white">Solution Comparison</h3>
+                  <p className="text-xs text-slate-400">Traditional vs MEYYURAI</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Discover how MEYYURAI replaces manual screening with evidence-based verification and automated job alignment.
+              </p>
+              <button
+                onClick={() => navigate('/solution-comparison')}
+                className="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-rose-600/30"
+              >
+                <span>View Full Comparison</span>
+                <TrendingUp size={14} />
+              </button>
+            </div>
           </div>
 
           {/* Details Section */}
