@@ -62,6 +62,9 @@ export default function UploadPage() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setResult(response.data);
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 100);
     } catch (err) {
       console.error(err);
       const backendError = err.response?.data?.detail;
