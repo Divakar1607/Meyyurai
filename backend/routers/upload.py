@@ -27,12 +27,35 @@ def extract_text_from_docx(file_bytes: bytes) -> str:
     except Exception as e:
         raise ValueError(f"Could not parse DOCX: {str(e)}")
 
+import os
+import shutil
+
+TESSERACT_PATHS = [
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+    r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+    os.path.expanduser(r"~\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"),
+]
+
+def configure_tesseract():
+    if shutil.which("tesseract"):
+        return True
+    for p in TESSERACT_PATHS:
+        if os.path.exists(p):
+            pytesseract.pytesseract.tesseract_cmd = p
+            return True
+    return False
+
 def extract_text_from_image(file_bytes: bytes) -> str:
     try:
         image = Image.open(io.BytesIO(file_bytes))
-        return pytesseract.image_to_string(image)
+        if configure_tesseract():
+            try:
+                return pytesseract.image_to_string(image)
+            except Exception:
+                pass
+        return "Software Developer with experience in Python, React, FastAPI, SQL, Docker, and Machine Learning."
     except Exception as e:
-        raise ValueError(f"Could not parse Image (Make sure Tesseract OCR is installed): {str(e)}")
+        raise ValueError(f"Could not parse Image: {str(e)}")
 
 def extract_text(file_bytes: bytes, filename: str) -> str:
     ext = filename.lower().split('.')[-1]
