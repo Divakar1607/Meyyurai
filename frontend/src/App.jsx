@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage';
 import UploadPage from './components/UploadPage';
 import EvidencePage from './components/EvidencePage';
 import DashboardPage from './components/DashboardPage';
+import SolutionComparisonPage from './components/SolutionComparisonPage';
 import IntroAnimation from './components/IntroAnimation';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
               <Route path="/upload" element={<UploadPage />} />
               <Route path="/evidence" element={<EvidencePage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/solution-comparison" element={<SolutionComparisonPage />} />
             </Routes>
           </Router>
         </div>
